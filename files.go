@@ -68,14 +68,13 @@ func (c *FileService) GetFile(fileId string) (*http.Response, *File, error) {
 
 // Documentation https://developer.box.com/docs/#files-upload-a-file
 // TODO(ttacon): deal with handling SHA1 headers
-func (c *FileService) UploadFile(filePath, parentId string) (*http.Response, *FileCollection, error) {
-	file, err := os.Open(filePath)
+func (c *FileService) UploadFile(fileUrl, parentId string) (*http.Response, *FileCollection, error) {
+	res, err := http.Get(fileUrl)
 	if err != nil {
-		return nil, nil, err
+	    log.Fatal(err)
 	}
-	defer file.Close()
-
-	fileContents, err := ioutil.ReadAll(file)
+	fileContents, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
 	if err != nil {
 		return nil, nil, err
 	}
