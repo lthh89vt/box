@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"log"
 )
 
 type FileService struct {
@@ -79,25 +80,20 @@ func (c *FileService) UploadFile(fileUrl, parentId string) (*http.Response, *Fil
 		return nil, nil, err
 	}
 
-	fi, err := file.Stat()
-	if err != nil {
-		return nil, nil, err
-	}
-
 	var (
 		body   = &bytes.Buffer{}
 		writer = multipart.NewWriter(body)
 	)
 
 	// write the file
-	part, err := writer.CreateFormFile("file", fi.Name())
+	part, err := writer.CreateFormFile("file", "tempFile")
 	if err != nil {
 		return nil, nil, err
 	}
 	part.Write(fileContents)
 
 	// write the other form fields we need
-	err = writer.WriteField("filename", fi.Name())
+	err = writer.WriteField("filename", "tempFile")
 	if err != nil {
 		return nil, nil, err
 	}
